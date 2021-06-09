@@ -8,7 +8,6 @@ namespace Capstone
 {
     public class VendingMachine
     {
-
         //This property is the password for an admin to login to the vending machine
         //to view the sales report. It's default value is set to "admin" until it is changed.
         public static string adminPassword = "admin";
@@ -310,6 +309,5 @@ namespace Capstone
             StockInventoryFromFile(dataReader);
             UserInterface.EndOfMenu(input, display, "Machine successfully restocked! Press \"Enter\" to continue...");
         }
-
     }
 }
