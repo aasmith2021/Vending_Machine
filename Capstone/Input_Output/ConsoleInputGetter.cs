@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Capstone
 {
-    public class InputGetter : IUserInput
+    public class ConsoleInputGetter : IInput
     {
         public string GetInput()
         {

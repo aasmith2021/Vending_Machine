@@ -8,6 +8,7 @@ namespace CapstoneTests
     [TestClass]
     public class VendingMachineTests
     {
+        /*
         private Item[] GetTestItems()
         {
             Item[] testItems = new Item[]
@@ -104,5 +105,6 @@ namespace CapstoneTests
                 Assert.AreEqual(expectedItemPrice, actualItemPrice, "Item price of a vending machine item does not match the expected name");
             }
         }
+        */
     }
 }

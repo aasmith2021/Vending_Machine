@@ -6,7 +6,7 @@ using Capstone;
 namespace CapstoneTests
 {
     [TestClass]
-    public class FakeUserInputA4 : IUserInput
+    public class FakeUserInputA4 : IInput
     {
         public string GetInput()
         {

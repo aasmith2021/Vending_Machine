@@ -43,7 +43,7 @@ namespace Capstone
                 }
                 else
                 {
-                    Item soldOutItem = new Item("SOLD OUT", 0m, "");
+                    Item soldOutItem = new UnknownItem("SOLD OUT", 0m, "");
                     return soldOutItem;
                 }
             }
