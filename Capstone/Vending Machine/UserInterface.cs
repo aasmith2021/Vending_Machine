@@ -50,7 +50,7 @@ namespace Capstone
 
                 string slotId = slot.SlotId;
                 string itemName = slot.ItemInSlot.Name;
-                decimal itemPrice = slot.ItemInSlot.Price;
+                decimal itemPrice = slot.Price;
 
                 display.DisplayData($"{slotId,-10}{itemName,-30}{itemPrice,-10:C2}{itemQuantity,-10}");
             }
@@ -144,7 +144,7 @@ namespace Capstone
             display.DisplayData("Enter the slot of the item you wish to purchase, or \"Exit\" to exit:");
             string userOption = input.GetInput().ToUpper();
 
-            while ((!inventoryList.ContainsKey(userOption) || inventoryList[userOption].Quantity == 0 || inventoryList[userOption].ItemInSlot.Price > currentBalance) && userOption != "EXIT")
+            while ((!inventoryList.ContainsKey(userOption) || inventoryList[userOption].Quantity == 0 || inventoryList[userOption].Price > currentBalance) && userOption != "EXIT")
             {
                 display.DisplayData();
 
@@ -156,7 +156,7 @@ namespace Capstone
                 {
                     display.DisplayData("That item is SOLD OUT. Please enter a different slot for an item you wish to purchase, or \"Exit\" to exit:");
                 }
-                else if (inventoryList[userOption].ItemInSlot.Price > currentBalance)
+                else if (inventoryList[userOption].Price > currentBalance)
                 {
                     display.DisplayData("You don't have enough funds to purchase that item. Please enter a different slot for an item you wish to purchase, or \"Exit\" to exit:");
                 }
@@ -168,13 +168,13 @@ namespace Capstone
         }
 
         //Displays the item's message for the user once it is purchased
-        public static void PrintItemMessage(IDisplay display, Item item, decimal currentBalance)
+        public static void PrintItemMessage(IDisplay display, Item item, Slot slot, decimal currentBalance)
         {
             string message = item.Message;
             display.DisplayData();
             display.DisplayData($"{message} {message}, Yum!");
             display.DisplayData();
-            display.DisplayData($"Bought 1 {item.Name} for {item.Price:C2}; you have {currentBalance:C2} remaining.");
+            display.DisplayData($"Bought 1 {item.Name} for {slot.Price:C2}; you have {currentBalance:C2} remaining.");
         }
 
         //Displays a menu of the provided menu options and can display the vending machine current balance

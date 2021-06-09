@@ -6,7 +6,7 @@ namespace Capstone
 {
     class UnknownItem : Item
     {
-        public UnknownItem(string name, decimal price, string category) : base(name, price, category)
+        public UnknownItem(string name, string category) : base(name, category)
         {
 
         }

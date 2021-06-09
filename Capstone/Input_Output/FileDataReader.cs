@@ -7,7 +7,9 @@ namespace Capstone
 {
     public class FileDataReader : IDataReader
     {
-        public List<string[]> GetDataFromSource(IInput input, string fileToRead, string delimiter)
+        //This class creates an object that implements the IDataReader
+        //interface to read input from a file stored in the current directory
+        public List<string[]> GetDataFromSource(IInput input, IDisplay display, string fileToRead, string delimiter)
         {
             List<string[]> fileContents = new List<string[]>();
             bool readSuccessful = false;
@@ -32,7 +34,7 @@ namespace Capstone
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Unable to find file to read from. Please enter new file path:");
+                    display.DisplayData("Unable to find file to read from. Please enter new file path:");
                     filePathToReadFrom = input.GetInput();
                 }
             }

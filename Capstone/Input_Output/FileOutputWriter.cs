@@ -7,7 +7,9 @@ namespace Capstone
 {
     public class FileOutputWriter : IOutput
     {
-        public void ProduceOutput(IInput input, string outputToWrite, string destinationFile, bool appendFile)
+        //This class creates an object that implements the IOutput
+        //interface to write string to a file in the current directory
+        public void ProduceOutput(IInput input, IDisplay display, string outputToWrite, string destinationFile, bool appendFile)
         {
             bool writeSuccessful = false;
 
@@ -26,7 +28,7 @@ namespace Capstone
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Unable to find destination file to write to. Please enter new file path:");
+                    display.DisplayData("Unable to find destination file to write to. Please enter new file path:");
                     filePathToWriteTo = input.GetInput();
                 }
             }

@@ -6,7 +6,7 @@ namespace Capstone
 {
     public class Chip : Item
     {
-        public Chip(string name, decimal price, string category) : base(name, price, category)
+        public Chip(string name, string category) : base(name, category)
         {
 
         }

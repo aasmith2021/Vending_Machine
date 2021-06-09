@@ -8,32 +8,32 @@ namespace Capstone
 {
     public class VendingMachine
     {
-        //This property is the password for an admin to login to the vending machine
-        //to view the sales report. It's default value is set to "admin" until it is changed.
+        //This field is the password for an admin to login to the vending machine to view
+        //the sales report. It's default value is set to "admin" until it is changed.
         public static string adminPassword = "admin";
 
         //The <salesList> contains the count of the number of sales for each item
         public Dictionary<string, int> salesList = new Dictionary<string, int>();
 
-        public decimal SalesSum { get; set; } = 0;
+        public VendingMachine(IInput input, IOutput output, IDisplay display, IDataReader dataReader)
+        {
+            StockInventory(input, display, dataReader);
+            CreateInitialSalesList();
+            RunUI(input, output, display, dataReader);
+        }
 
         public decimal CurrentBalance { get; set; }
 
         public SortedList<string, Slot> InventoryList { get; private set; } = new SortedList<string, Slot>();
 
-        public VendingMachine(IInput input, IOutput output, IDisplay display, IDataReader dataReader)
-        {
-            StockInventoryFromFile(input, dataReader);
-            CreateInitialSalesList();
-            RunUI(input, output, display, dataReader);
-        }
+        public decimal SalesSum { get; set; } = 0;
 
         //When a new <VendingMachine> object is created, this method creates
         //all of the inventory and "stocks" the vending machine with all of the
-        //items that are read from the Inventory.txt file.
-        public void StockInventoryFromFile(IInput input, IDataReader dataReader)
+        //items that are read from the source provided to the dataReader
+        public void StockInventory(IInput input, IDisplay display, IDataReader dataReader)
         {
-            List<string[]> inventory = ReadWrite.ReadInventoryFile(input, dataReader);
+            List<string[]> inventory = ReadWrite.ReadInventory(input, display, dataReader);
 
             int indexOfSlotId = 0;
             int indexOfItemName = 1;
@@ -47,23 +47,23 @@ namespace Capstone
                 switch (element[indexOfItemCategory])
                 {
                     case "Candy":
-                        newItem = new Candy(element[indexOfItemName], decimal.Parse(element[indexOfItemPrice]), element[indexOfItemCategory]);
+                        newItem = new Candy(element[indexOfItemName], element[indexOfItemCategory]);
                         break;
                     case "Chip":
-                        newItem = new Chip(element[indexOfItemName], decimal.Parse(element[indexOfItemPrice]), element[indexOfItemCategory]);
+                        newItem = new Chip(element[indexOfItemName], element[indexOfItemCategory]);
                         break;
                     case "Drink":
-                        newItem = new Drink(element[indexOfItemName], decimal.Parse(element[indexOfItemPrice]), element[indexOfItemCategory]);
+                        newItem = new Drink(element[indexOfItemName], element[indexOfItemCategory]);
                         break;
                     case "Gum":
-                        newItem = new Gum(element[indexOfItemName], decimal.Parse(element[indexOfItemPrice]), element[indexOfItemCategory]);
+                        newItem = new Gum(element[indexOfItemName], element[indexOfItemCategory]);
                         break;
                     default:
-                        newItem = new UnknownItem(element[indexOfItemName], decimal.Parse(element[indexOfItemPrice]), element[indexOfItemCategory]);
+                        newItem = new UnknownItem(element[indexOfItemName], element[indexOfItemCategory]);
                         break;
                 }
 
-                InventoryList[element[indexOfSlotId]] = new Slot(element[indexOfSlotId], newItem);
+                InventoryList[element[indexOfSlotId]] = new Slot(element[indexOfSlotId], newItem, decimal.Parse(element[indexOfItemPrice]));
             }
         }
 
@@ -149,7 +149,7 @@ namespace Capstone
             
             decimal startingBalance = CurrentBalance;
             CurrentBalance += moneyToAdd;
-            ReadWrite.LogEntry(input, output, "FEED MONEY:", startingBalance, CurrentBalance);
+            ReadWrite.LogEntry(input, output, display, "FEED MONEY:", startingBalance, CurrentBalance);
         }
 
         //Displays all the items in the vending machine and prompts the user to select
@@ -182,14 +182,14 @@ namespace Capstone
             Item itemToBuy = slot.ItemStack.Pop();
             
             decimal startingBalance = CurrentBalance;
-            CurrentBalance -= itemToBuy.Price;
-            SalesSum += itemToBuy.Price;
+            CurrentBalance -= slot.Price;
+            SalesSum += slot.Price;
             salesList[itemToBuy.Name]++;
 
             string transactionForLog = $"{itemToBuy.Name} {slot.SlotId}";
-            ReadWrite.LogEntry(input, output, transactionForLog, startingBalance, CurrentBalance);
+            ReadWrite.LogEntry(input, output, display, transactionForLog, startingBalance, CurrentBalance);
 
-            UserInterface.PrintItemMessage(display, itemToBuy, CurrentBalance);
+            UserInterface.PrintItemMessage(display, itemToBuy, slot, CurrentBalance);
             UserInterface.EndOfMenu(input, display, "Press \"Enter\" to continue...");
         }
 
@@ -232,7 +232,7 @@ namespace Capstone
                 amountRemaining %= changeAmounts[i].Item1;
                 display.DisplayData($"{changeAmounts[i].Item2} {change[i]}");
             }
-            ReadWrite.LogEntry(input, output, "GIVE CHANGE:", startingBalance, CurrentBalance);
+            ReadWrite.LogEntry(input, output, display, "GIVE CHANGE:", startingBalance, CurrentBalance);
 
             UserInterface.EndOfMenu(input, display, "Press \"Enter\" to continue...");
         }
@@ -298,7 +298,7 @@ namespace Capstone
         //Writes a sales report to a file, using the current date and time in the file name
         public void GenerateSalesReport(IInput input, IOutput output, IDisplay display, Dictionary<string, int> salesList, decimal salesSum)
         {
-            ReadWrite.WriteSalesReport(input, output, salesList, SalesSum);
+            ReadWrite.WriteSalesReport(input, output, display, salesList, SalesSum);
             UserInterface.EndOfMenu(input, display, "Sales report successfully generated! Press \"Enter\" to continue...");
         }
 
@@ -306,7 +306,7 @@ namespace Capstone
         //the default items from the Inventory.txt file
         public void RestockVendingMachine(IInput input, IDisplay display, IDataReader dataReader)
         {
-            StockInventoryFromFile(input, dataReader);
+            StockInventory(input, display, dataReader);
             UserInterface.EndOfMenu(input, display, "Machine successfully restocked! Press \"Enter\" to continue...");
         }
     }

@@ -8,18 +8,26 @@ namespace Capstone
     {
         public Slot(string slotId)
         {
-            SlotId = slotId;
+            this.SlotId = slotId;
         }
 
-        public Slot(string slotId, Item item, int quantity = 5)
+        public Slot(string slotId, Item item, decimal price, int quantity = 5)
         {
 
-            SlotId = slotId;
+            this.SlotId = slotId;
+            this.Price = price;
+
             for (int i = 0; i < quantity; i++)
             {
-                ItemStack.Push(item);
+                this.ItemStack.Push(item);
             }
         }
+
+        public string SlotId { get; }
+
+        public Stack<Item> ItemStack { get; set; } = new Stack<Item>();
+
+        public decimal Price { get; set; }
 
         public int Quantity
         {
@@ -28,10 +36,6 @@ namespace Capstone
                 return ItemStack.Count;
             }
         }
-
-        public string SlotId { get; }
-
-        public Stack<Item> ItemStack { get; set; } = new Stack<Item>();
 
         public Item ItemInSlot
         {
@@ -43,7 +47,7 @@ namespace Capstone
                 }
                 else
                 {
-                    Item soldOutItem = new UnknownItem("SOLD OUT", 0m, "");
+                    Item soldOutItem = new UnknownItem("SOLD OUT", "");
                     return soldOutItem;
                 }
             }

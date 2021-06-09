@@ -7,30 +7,30 @@ namespace Capstone
 {
     public static class ReadWrite
     {
-        //This method reads the lines from an inventory file to produce the inventory
+        //This method reads the lines from an inventory data source to produce the inventory
         //needed to stock the vending machine
-        public static List<string[]> ReadInventoryFile(IInput input, IDataReader dataReader)
+        public static List<string[]> ReadInventory(IInput input, IDisplay display, IDataReader dataReader)
         {
             string inventoryFileName = "Inventory.txt";
             string delimiter = "|";
-            List<string[]> inventory = dataReader.GetDataFromSource(input, inventoryFileName, delimiter);
+            List<string[]> inventory = dataReader.GetDataFromSource(input, display, inventoryFileName, delimiter);
 
             return inventory;
         }
 
         //Writes a vending machine log entry to the Log.txt file for a specific transaction
-        public static void LogEntry(IInput input, IOutput output, string transaction, decimal startBalance, decimal currentBalance)
+        public static void LogEntry(IInput input, IOutput output, IDisplay display, string transaction, decimal startBalance, decimal currentBalance)
         {
             string outputString = $"{DateTime.Now:MM/dd/yyyy hh:mm:ss tt} {transaction} {startBalance:C2} {currentBalance:C2}";
             string destinationFile = "Log.txt";
             bool appendFile = true;
 
-            output.ProduceOutput(input, outputString, destinationFile, appendFile);
+            output.ProduceOutput(input, display, outputString, destinationFile, appendFile);
         }
 
         //Writes the vending machine sales report to a destination file whose file name is based on the
         //time and date the report was generated.
-        public static void WriteSalesReport(IInput input, IOutput output, Dictionary<string, int> salesList, decimal salesSum)
+        public static void WriteSalesReport(IInput input, IOutput output, IDisplay display, Dictionary<string, int> salesList, decimal salesSum)
         {
             string outputString = "";
             string destinationFile = $"{DateTime.Now:MM-dd-yyyy_hh.mm.ss_tt} Sales Report.txt";
@@ -40,7 +40,7 @@ namespace Capstone
             {
                 outputString = $"{kvp.Key}|{kvp.Value}";
 
-                output.ProduceOutput(input, outputString, destinationFile, appendFile);
+                output.ProduceOutput(input, display, outputString, destinationFile, appendFile);
             }
 
             string[] endOfSalesReport = new string[] { "", $"**TOTAL SALES** {salesSum:C2}" };
@@ -49,7 +49,7 @@ namespace Capstone
             {
                 outputString = element;
 
-                output.ProduceOutput(input, outputString, destinationFile, appendFile);
+                output.ProduceOutput(input, display, outputString, destinationFile, appendFile);
             }
         }
     }

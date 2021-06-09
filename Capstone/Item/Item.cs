@@ -6,16 +6,13 @@ namespace Capstone
 {
     public abstract class Item
     {
-        public Item (string name, decimal price, string category)
+        public Item (string name, string category)
         {
             Name = name;
-            Price = price;
             Category = category;
         }
 
         public string Name { get; protected set; }
-
-        public decimal Price { get; protected set; }
 
         public string Category { get; protected set; }
 
