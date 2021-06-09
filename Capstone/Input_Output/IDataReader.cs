@@ -6,6 +6,6 @@ namespace Capstone
 {
     public interface IDataReader
     {
-        public List<string[]> GetDataFromSource(string source, string delimiter);
+        public List<string[]> GetDataFromSource(IInput input, string source, string delimiter);
     }
 }

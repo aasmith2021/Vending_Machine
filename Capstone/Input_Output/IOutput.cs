@@ -6,6 +6,6 @@ namespace Capstone
 {
     public interface IOutput
     {
-        public void ProduceOutput(string output, string destination, bool appendDestination);
+        public void ProduceOutput(IInput input, string output, string destination, bool appendDestination);
     }
 }

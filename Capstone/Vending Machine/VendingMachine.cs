@@ -23,7 +23,7 @@ namespace Capstone
 
         public VendingMachine(IInput input, IOutput output, IDisplay display, IDataReader dataReader)
         {
-            StockInventoryFromFile(dataReader);
+            StockInventoryFromFile(input, dataReader);
             CreateInitialSalesList();
             RunUI(input, output, display, dataReader);
         }
@@ -31,9 +31,9 @@ namespace Capstone
         //When a new <VendingMachine> object is created, this method creates
         //all of the inventory and "stocks" the vending machine with all of the
         //items that are read from the Inventory.txt file.
-        public void StockInventoryFromFile(IDataReader dataReader)
+        public void StockInventoryFromFile(IInput input, IDataReader dataReader)
         {
-            List<string[]> inventory = ReadWrite.ReadInventoryFile(dataReader);
+            List<string[]> inventory = ReadWrite.ReadInventoryFile(input, dataReader);
 
             int indexOfSlotId = 0;
             int indexOfItemName = 1;
@@ -149,7 +149,7 @@ namespace Capstone
             
             decimal startingBalance = CurrentBalance;
             CurrentBalance += moneyToAdd;
-            ReadWrite.LogEntry(output, "FEED MONEY:", startingBalance, CurrentBalance);
+            ReadWrite.LogEntry(input, output, "FEED MONEY:", startingBalance, CurrentBalance);
         }
 
         //Displays all the items in the vending machine and prompts the user to select
@@ -187,7 +187,7 @@ namespace Capstone
             salesList[itemToBuy.Name]++;
 
             string transactionForLog = $"{itemToBuy.Name} {slot.SlotId}";
-            ReadWrite.LogEntry(output, transactionForLog, startingBalance, CurrentBalance);
+            ReadWrite.LogEntry(input, output, transactionForLog, startingBalance, CurrentBalance);
 
             UserInterface.PrintItemMessage(display, itemToBuy, CurrentBalance);
             UserInterface.EndOfMenu(input, display, "Press \"Enter\" to continue...");
@@ -232,7 +232,7 @@ namespace Capstone
                 amountRemaining %= changeAmounts[i].Item1;
                 display.DisplayData($"{changeAmounts[i].Item2} {change[i]}");
             }
-            ReadWrite.LogEntry(output, "GIVE CHANGE:", startingBalance, CurrentBalance);
+            ReadWrite.LogEntry(input, output, "GIVE CHANGE:", startingBalance, CurrentBalance);
 
             UserInterface.EndOfMenu(input, display, "Press \"Enter\" to continue...");
         }
@@ -298,7 +298,7 @@ namespace Capstone
         //Writes a sales report to a file, using the current date and time in the file name
         public void GenerateSalesReport(IInput input, IOutput output, IDisplay display, Dictionary<string, int> salesList, decimal salesSum)
         {
-            ReadWrite.WriteSalesReport(output, salesList, SalesSum);
+            ReadWrite.WriteSalesReport(input, output, salesList, SalesSum);
             UserInterface.EndOfMenu(input, display, "Sales report successfully generated! Press \"Enter\" to continue...");
         }
 
@@ -306,7 +306,7 @@ namespace Capstone
         //the default items from the Inventory.txt file
         public void RestockVendingMachine(IInput input, IDisplay display, IDataReader dataReader)
         {
-            StockInventoryFromFile(dataReader);
+            StockInventoryFromFile(input, dataReader);
             UserInterface.EndOfMenu(input, display, "Machine successfully restocked! Press \"Enter\" to continue...");
         }
     }
