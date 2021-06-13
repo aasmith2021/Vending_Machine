@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System;
+using System.IO;
 using Capstone;
 
 namespace CapstoneTests
@@ -8,27 +9,26 @@ namespace CapstoneTests
     [TestClass]
     public class VendingMachineTests
     {
-        /*
         private Item[] GetTestItems()
         {
             Item[] testItems = new Item[]
             {
-                new Item("Potato Crisps", 3.05m, "Chip"),
-                new Item("Stackers", 1.45m, "Chip"),
-                new Item("Grain Waves", 2.75m, "Chip"),
-                new Item("Cloud Popcorn", 3.65m, "Chip"),
-                new Item("Moonpie", 1.80m, "Candy"),
-                new Item("Cowtales", 1.50m, "Candy"),
-                new Item("Wonka Bar", 1.50m, "Candy"),
-                new Item("Crunchie", 1.75m, "Candy"),
-                new Item("Cola", 1.25m, "Drink"),
-                new Item("Dr. Salt", 1.50m, "Drink"),
-                new Item("Mountain Melter", 1.50m, "Drink"),
-                new Item("Heavy", 1.50m, "Drink"),
-                new Item("U-Chews", .85m, "Gum"),
-                new Item("Little League Chew", 0.95m, "Gum"),
-                new Item("Chiclets", 0.75m, "Gum"),
-                new Item("Triplemint", 0.75m, "Gum"),
+                new Chip("Potato Crisps", "Chip"),
+                new Chip("Stackers", "Chip"),
+                new Chip("Grain Waves", "Chip"),
+                new Chip("Cloud Popcorn", "Chip"),
+                new Candy("Moonpie", "Candy"),
+                new Candy("Cowtales", "Candy"),
+                new Candy("Wonka Bar", "Candy"),
+                new Candy("Crunchie", "Candy"),
+                new Drink("Cola", "Drink"),
+                new Drink("Dr. Salt", "Drink"),
+                new Drink("Mountain Melter", "Drink"),
+                new Drink("Heavy", "Drink"),
+                new Gum("U-Chews", "Gum"),
+                new Gum("Little League Chew", "Gum"),
+                new Gum("Chiclets", "Gum"),
+                new Gum("Triplemint", "Gum"),
             };
 
             return testItems;
@@ -38,22 +38,22 @@ namespace CapstoneTests
         {
             Slot[] testSlots = new Slot[]
             {
-                new Slot("A1", testItems[0], 5),
-                new Slot("A2", testItems[1], 5),
-                new Slot("A3", testItems[2], 5),
-                new Slot("A4", testItems[3], 5),
-                new Slot("B1", testItems[4], 5),
-                new Slot("B2", testItems[5], 5),
-                new Slot("B3", testItems[6], 5),
-                new Slot("B4", testItems[7], 5),
-                new Slot("C1", testItems[8], 5),
-                new Slot("C2", testItems[9], 5),
-                new Slot("C3", testItems[10], 5),
-                new Slot("C4", testItems[11], 5),
-                new Slot("D1", testItems[12], 5),
-                new Slot("D2", testItems[13], 5),
-                new Slot("D3", testItems[14], 5),
-                new Slot("D4", testItems[15], 5)
+                new Slot("A1", testItems[0], 3.05m, 5),
+                new Slot("A2", testItems[1], 1.45m, 5),
+                new Slot("A3", testItems[2], 2.75m, 5),
+                new Slot("A4", testItems[3], 3.65m, 5),
+                new Slot("B1", testItems[4], 1.80m, 5),
+                new Slot("B2", testItems[5], 1.50m, 5),
+                new Slot("B3", testItems[6], 1.50m, 5),
+                new Slot("B4", testItems[7], 1.75m, 5),
+                new Slot("C1", testItems[8], 1.25m, 5),
+                new Slot("C2", testItems[9], 1.50m, 5),
+                new Slot("C3", testItems[10], 1.50m, 5),
+                new Slot("C4", testItems[11], 1.50m, 5),
+                new Slot("D1", testItems[12], 0.85m, 5),
+                new Slot("D2", testItems[13], 0.95m, 5),
+                new Slot("D3", testItems[14], 0.75m, 5),
+                new Slot("D4", testItems[15], 0.75m, 5)
             };
 
             return testSlots;
@@ -63,7 +63,12 @@ namespace CapstoneTests
         public void Creating_a_new_Vending_Machine_correctly_populates_vending_machine_with_items_from_Inventory_file()
         {
             //Arrange
-            VendingMachine testVM = new VendingMachine(false);
+            IInput input = new FakeUserInput3();
+            IDisplay display = new FakeDisplay();
+            IOutput output = new FileOutputWriter();
+            IDataReader dataReader = new FileDataReader();
+
+            VendingMachine testVM = new VendingMachine(input, output, display, dataReader);
 
             Slot[] testSlots = GetTestSlots(GetTestItems());
             SortedList<string, Slot> expectedInventoryList = new SortedList<string, Slot>()
@@ -94,17 +99,30 @@ namespace CapstoneTests
             {
                 string expectedItemName = expectedInventoryList.Values[i].ItemInSlot.Name;
                 string expectedItemCategory = expectedInventoryList.Values[i].ItemInSlot.Category;
-                decimal expectedItemPrice = expectedInventoryList.Values[i].ItemInSlot.Price;
+                decimal expectedItemPrice = expectedInventoryList.Values[i].Price;
 
                 string actualItemName = actualInventoryList.Values[i].ItemInSlot.Name;
                 string actualItemCategory = actualInventoryList.Values[i].ItemInSlot.Category;
-                decimal actualItemPrice = actualInventoryList.Values[i].ItemInSlot.Price;
+                decimal actualItemPrice = actualInventoryList.Values[i].Price;
 
                 Assert.AreEqual(expectedItemName, actualItemName, "Item name of a vending machine item does not match the expected name");
                 Assert.AreEqual(expectedItemCategory, actualItemCategory, "Item category of a vending machine item does not match the expected name");
                 Assert.AreEqual(expectedItemPrice, actualItemPrice, "Item price of a vending machine item does not match the expected name");
             }
         }
-        */
+
+        [TestMethod]
+        public void ()
+        {
+            //Arrange
+
+
+
+            //Act
+
+
+            //Assert
+  
+        }
     }
 }

@@ -6,11 +6,14 @@ using Capstone;
 namespace CapstoneTests
 {
     [TestClass]
-    public class FakeUserInput5 : IInput
+    public class FakeDisplay : IDisplay
     {
-        public string GetInput()
+        public void DisplayData(string dataToDisplay = "")
         {
-            return "5";
+        }
+
+        public void ClearDisplay()
+        {
         }
     }
 }

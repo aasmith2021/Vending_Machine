@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Capstone
 {
-    class Gum : Item
+    public class Gum : Item
     {
         public Gum(string name, string category) : base(name, category)
         {
