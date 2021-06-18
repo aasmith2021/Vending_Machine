@@ -8,24 +8,20 @@ namespace Capstone
     {
         static void Main()
         {
-            //Creates new class instances of the objects needed to run the
-            //vending machine as a console application using the Input_Output interfaces
+            //Creates new instances of the objects needed to run the vending machine
+            //as a console application using the IUserIO and IDataIO interfaces
 
-            //The <input> object captures input from the user
-            IInput input = new ConsoleInputGetter();
+            //The <userIO> object captures input from and displays data to the user
+            IUserIO userIO = new ConsoleAppIO();
 
-            //The <display> object displays written output from the program
-            IDisplay display = new ConsoleDisplayWriter();
-
-            //The <output> object writes output from the program to a destination, such as a file or database
-            IOutput output = new FileOutputWriter();
-
-            //The <dataReader> object reads data from a data source, such as a file or database
-            IDataReader dataReader = new FileDataReader();
+            //The <dataIO> object reads data from and writes data to a data source,
+            //such as a file or database
+            //IDataIO dataIO = new FileIO();
+            IDataIO dataIO = new DatabaseIO();
 
             
             //Creates a new Vendo-Matic 800 Vending Machine when the program runs
-            new VendingMachine(input, output, display, dataReader);
+            new VendingMachine(userIO, dataIO);
         }
     }
 }

@@ -6,11 +6,21 @@ using Capstone;
 namespace CapstoneTests
 {
     [TestClass]
-    public class FakeUserInputAdmin : IInput
+    public class FakeUserIOAdmin : IUserIO
     {
         public string GetInput()
         {
             return "admin";
+        }
+
+        public void ClearDisplay()
+        {
+
+        }
+
+        public void DisplayData(string dataToDisplay = "")
+        {
+
         }
     }
 }

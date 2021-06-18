@@ -13,11 +13,11 @@ namespace Capstone
         //The <salesList> contains the count of the number of sales for each item
         public Dictionary<string, int> salesList = new Dictionary<string, int>();
 
-        public VendingMachine(IInput input, IOutput output, IDisplay display, IDataReader dataReader)
+        public VendingMachine(IUserIO userIO, IDataIO dataIO)
         {
-            StockInventory(input, display, dataReader);
+            StockInventory(userIO, dataIO);
             CreateInitialSalesList();
-            RunUI(input, output, display, dataReader);
+            RunUI(userIO, dataIO);
         }
 
         public decimal CurrentBalance { get; set; }
@@ -28,10 +28,10 @@ namespace Capstone
 
         //When a new <VendingMachine> object is created, this method creates
         //all of the inventory and "stocks" the vending machine with all of the
-        //items that are read from the source provided to the dataReader
-        public void StockInventory(IInput input, IDisplay display, IDataReader dataReader)
+        //items that are read from the source provided to the dataIO
+        public void StockInventory(IUserIO userIO, IDataIO dataIO)
         {
-            List<string[]> inventory = ReadWrite.ReadInventory(input, display, dataReader);
+            List<string[]> inventory = ReadWrite.ReadInventory(userIO, dataIO);
 
             int indexOfSlotId = 0;
             int indexOfItemName = 1;
@@ -80,29 +80,29 @@ namespace Capstone
         //run the User Interface of the vending machine so a customer or vending machine
         //owner can interact with the machine. It is run in a "do-while" loop so that
         //the user interface continues to run until the user selects the "Exit" option.
-        public void RunUI(IInput input, IOutput output, IDisplay display, IDataReader dataReader)
+        public void RunUI(IUserIO userIO, IDataIO dataIO)
         {
             bool exitProgram = false;
 
             do
             {
-                string userOption = UserInterface.RunMainMenu(input, display);
+                string userOption = UserInterface.RunMainMenu(userIO);
 
                 //This switch statement takes the user's option and calls that option's
                 //method to run that section of the vending machine's User Interface.
                 switch (userOption)
                 {
                     case "1":
-                        UserInterface.DisplayVendingMachineItems(InventoryList.Values, input, display);
+                        UserInterface.DisplayVendingMachineItems(InventoryList.Values, userIO);
                         break;
                     case "2":
-                        Purchase(input, output, display);
+                        Purchase(userIO, dataIO);
                         break;
                     case "3":
                         exitProgram = true;
                         break;
                     case "4":
-                        AdminFeatures(input, output, display, dataReader);
+                        AdminFeatures(userIO, dataIO);
                         break;
                     default:
                         break;
@@ -112,24 +112,24 @@ namespace Capstone
         }
 
         //This method runs the Purchase functions of the vending machine
-        public void Purchase(IInput input, IOutput output, IDisplay display)
+        public void Purchase(IUserIO userIO, IDataIO dataIO)
         {
             bool exitPurchase = false;
 
             do
             {
-                string userOption = UserInterface.RunPurchaseMenu(input, display, CurrentBalance);
+                string userOption = UserInterface.RunPurchaseMenu(userIO, CurrentBalance);
 
                 switch (userOption)
                 {
                     case "1":
-                        FeedMoney(input, output, display);
+                        FeedMoney(userIO, dataIO);
                         break;
                     case "2":
-                        SelectProduct(input, output, display);
+                        SelectProduct(userIO, dataIO);
                         break;
                     case "3":
-                        FinishTransaction(input, output, display);
+                        FinishTransaction(userIO, dataIO);
                         exitPurchase = true;
                         break;
                     default:
@@ -141,24 +141,24 @@ namespace Capstone
 
         //Allows the user to feed a whole dollar amount into the vending machine
         //and adds the money amount fed in to their current balance.
-        public void FeedMoney(IInput input, IOutput output, IDisplay display)
+        public void FeedMoney(IUserIO userIO, IDataIO dataIO)
         {
-            int moneyToAdd = UserInterface.RunFeedMoneyMenu(input, display, CurrentBalance);
+            int moneyToAdd = UserInterface.RunFeedMoneyMenu(userIO, CurrentBalance);
             
             decimal startingBalance = CurrentBalance;
             CurrentBalance += moneyToAdd;
-            ReadWrite.LogEntry(input, output, display, "FEED MONEY:", startingBalance, CurrentBalance);
+            ReadWrite.LogEntry(userIO, dataIO, "FEED MONEY:", startingBalance, CurrentBalance);
         }
 
         //Displays all the items in the vending machine and prompts the user to select
         //a product they would like to purchase.
-        public void SelectProduct(IInput input, IOutput output, IDisplay display)
+        public void SelectProduct(IUserIO userIO, IDataIO dataIO)
         {
             bool exitSelectProduct = false;
 
             do
             {
-                string userOption = UserInterface.RunSelectProductMenu(input, display, InventoryList, CurrentBalance);
+                string userOption = UserInterface.RunSelectProductMenu(userIO, InventoryList, CurrentBalance);
 
                 if (userOption == "EXIT")
                 {
@@ -167,7 +167,7 @@ namespace Capstone
                 else
                 {
                     Slot slotWithItemToBuy = InventoryList[userOption];
-                    BuyItem(input, output, display, slotWithItemToBuy);
+                    BuyItem(userIO, dataIO, slotWithItemToBuy);
                 }
             } while(!exitSelectProduct);
         }
@@ -175,7 +175,7 @@ namespace Capstone
         //Purchases and item for the user, reducing their current balance to pay for the
         //item, decrementing the quantity of the item in the vending machine, and
         //logging the sale to the Log file.
-        public void BuyItem(IInput input, IOutput output, IDisplay display, Slot slot)
+        public void BuyItem(IUserIO userIO, IDataIO dataIO, Slot slot)
         {
             Item itemToBuy = slot.ItemStack.Pop();
             
@@ -185,15 +185,15 @@ namespace Capstone
             salesList[itemToBuy.Name]++;
 
             string transactionForLog = $"{itemToBuy.Name} {slot.SlotId}";
-            ReadWrite.LogEntry(input, output, display, transactionForLog, startingBalance, CurrentBalance);
+            ReadWrite.LogEntry(userIO, dataIO, transactionForLog, startingBalance, CurrentBalance);
 
-            UserInterface.PrintItemMessage(display, itemToBuy, slot, CurrentBalance);
-            UserInterface.EndOfMenu(input, display, "Press \"Enter\" to continue...");
+            UserInterface.PrintItemMessage(userIO, itemToBuy, slot, CurrentBalance);
+            UserInterface.EndOfMenu(userIO, "Press \"Enter\" to continue...");
         }
 
         //Completes a user's purchase transactions by cashing out their current
         //balance in quarters, dimes, nickels, and pennies
-        public void FinishTransaction(IInput input, IOutput output, IDisplay display)
+        public void FinishTransaction(IUserIO userIO, IDataIO dataIO)
         {
             //The <change> array holds the numbers of:
             //[0] quarters
@@ -212,10 +212,10 @@ namespace Capstone
 
             int amountRemaining = (int)(CurrentBalance * 100);
 
-            display.DisplayData();
-            display.DisplayData("Your transaction is complete!");
-            display.DisplayData();
-            display.DisplayData("Your change is:");
+            userIO.DisplayData();
+            userIO.DisplayData("Your transaction is complete!");
+            userIO.DisplayData();
+            userIO.DisplayData("Your change is:");
 
             //This for loop sets the amount of each coin denomination (i.e., quarter) to the greatest
             //whole number of the coins that can given from the <amountRemaining>. Then, the
@@ -228,28 +228,28 @@ namespace Capstone
                 change[i] = amountRemaining / changeAmounts[i].Item1;
                 CurrentBalance -= change[i] * (decimal)(changeAmounts[i].Item1 / 100m);
                 amountRemaining %= changeAmounts[i].Item1;
-                display.DisplayData($"{changeAmounts[i].Item2} {change[i]}");
+                userIO.DisplayData($"{changeAmounts[i].Item2} {change[i]}");
             }
-            ReadWrite.LogEntry(input, output, display, "GIVE CHANGE:", startingBalance, CurrentBalance);
+            ReadWrite.LogEntry(userIO, dataIO, "GIVE CHANGE:", startingBalance, CurrentBalance);
 
-            UserInterface.EndOfMenu(input, display, "Press \"Enter\" to continue...");
+            UserInterface.EndOfMenu(userIO, "Press \"Enter\" to continue...");
         }
 
         //This runs the Administrator features of the vending machine, including the
         //ability to generate a sales report that is saved to a file
-        public void AdminFeatures(IInput input, IOutput output, IDisplay display, IDataReader dataReader)
+        public void AdminFeatures(IUserIO userIO, IDataIO dataIO)
         {
             bool exitAdminMenu = false;
 
             do
             {
-                if (UserInterface.AdminLogin(input, display, adminPassword))
+                if (UserInterface.AdminLogin(userIO, adminPassword))
                 {
-                    AdminMenu(input, output, display, dataReader);
+                    AdminMenu(userIO, dataIO);
                 }
                 else
                 {
-                    UserInterface.EndOfMenu(input, display, "Invalid password. Press \"Enter\" to continue...");
+                    UserInterface.EndOfMenu(userIO, "Invalid password. Press \"Enter\" to continue...");
                 }
 
                 exitAdminMenu = true;
@@ -257,24 +257,24 @@ namespace Capstone
             while (!exitAdminMenu);
         }
 
-        public void AdminMenu(IInput input, IOutput output, IDisplay display, IDataReader dataReader)
+        public void AdminMenu(IUserIO userIO, IDataIO dataIO)
         {
             bool exitAdminMenu = false;
 
             do
             {
-                string userOption = UserInterface.RunAdminMenu(input, display);
+                string userOption = UserInterface.RunAdminMenu(userIO);
 
                 switch(userOption)
                 {
                     case "1":
-                        GenerateSalesReport(input, output, display, salesList, SalesSum);
+                        GenerateSalesReport(userIO, dataIO, salesList, SalesSum);
                         break;
                     case "2":
-                        ChangePassword(input, display);
+                        ChangePassword(userIO);
                         break;
                     case "3":
-                        RestockVendingMachine(input, display, dataReader);
+                        RestockVendingMachine(userIO, dataIO);
                         break;
                     case "4":
                         exitAdminMenu = true;
@@ -287,25 +287,25 @@ namespace Capstone
         }
 
         //This metod is used to change the admin password of the vending machine
-        public static void ChangePassword(IInput input, IDisplay display)
+        public static void ChangePassword(IUserIO userIO)
         {
-            adminPassword = UserInterface.ChangePasswordMenu(input, display);
-            UserInterface.EndOfMenu(input, display, "Admin password successfully changed! Press \"Enter\" to continue...");
+            adminPassword = UserInterface.ChangePasswordMenu(userIO);
+            UserInterface.EndOfMenu(userIO, "Admin password successfully changed! Press \"Enter\" to continue...");
         }
 
         //Writes a sales report to a file, using the current date and time in the file name
-        public void GenerateSalesReport(IInput input, IOutput output, IDisplay display, Dictionary<string, int> salesList, decimal salesSum)
+        public void GenerateSalesReport(IUserIO userIO, IDataIO dataIO, Dictionary<string, int> salesList, decimal salesSum)
         {
-            ReadWrite.WriteSalesReport(input, output, display, salesList, SalesSum);
-            UserInterface.EndOfMenu(input, display, "Sales report successfully generated! Press \"Enter\" to continue...");
+            ReadWrite.WriteSalesReport(userIO, dataIO, salesList, SalesSum);
+            UserInterface.EndOfMenu(userIO, "Sales report successfully generated! Press \"Enter\" to continue...");
         }
 
         //Allows the administrator to restock the vending machine by loading the machine with
-        //the default items from the Inventory.txt file
-        public void RestockVendingMachine(IInput input, IDisplay display, IDataReader dataReader)
+        //the default items from the Inventory file
+        public void RestockVendingMachine(IUserIO userIO, IDataIO dataIO)
         {
-            StockInventory(input, display, dataReader);
-            UserInterface.EndOfMenu(input, display, "Machine successfully restocked! Press \"Enter\" to continue...");
+            StockInventory(userIO, dataIO);
+            UserInterface.EndOfMenu(userIO, "Machine successfully restocked! Press \"Enter\" to continue...");
         }
     }
 }

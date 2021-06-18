@@ -63,12 +63,10 @@ namespace CapstoneTests
         public void Creating_a_new_Vending_Machine_correctly_populates_vending_machine_with_items_from_Inventory_file()
         {
             //Arrange
-            IInput input = new FakeUserInput3();
-            IDisplay display = new FakeDisplay();
-            IOutput output = new FileOutputWriter();
-            IDataReader dataReader = new FileDataReader();
+            IUserIO userIO = new FakeUserIO3();
+            IDataIO dataIO = new FileIO();
 
-            VendingMachine testVM = new VendingMachine(input, output, display, dataReader);
+            VendingMachine testVM = new VendingMachine(userIO, dataIO);
 
             Slot[] testSlots = GetTestSlots(GetTestItems());
             SortedList<string, Slot> expectedInventoryList = new SortedList<string, Slot>()
@@ -112,7 +110,7 @@ namespace CapstoneTests
         }
 
         [TestMethod]
-        public void ()
+        public void TESTMETHOD1()
         {
             //Arrange
 
@@ -122,7 +120,6 @@ namespace CapstoneTests
 
 
             //Assert
-  
         }
     }
 }
