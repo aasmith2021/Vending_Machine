@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Capstone
+namespace VendingMachineApplication
 {
     public static class ReadWrite
     {

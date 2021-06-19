@@ -2,7 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 
-namespace Capstone
+namespace VendingMachineApplication
 {
     public static class UserInterface
     {

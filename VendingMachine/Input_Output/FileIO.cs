@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Capstone
+namespace VendingMachineApplication
 {
     public class FileIO : IDataIO
     {

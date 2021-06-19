@@ -2,7 +2,7 @@
 using System.Text;
 using System.IO;
 
-namespace Capstone
+namespace VendingMachineApplication
 {
     class Program
     {

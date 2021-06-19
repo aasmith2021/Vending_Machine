@@ -2,13 +2,13 @@
 using System.Text;
 using System.Collections.Generic;
 
-namespace Capstone
+namespace VendingMachineApplication
 {
     public class VendingMachine
     {
         //This field is the password for an admin to login to the vending machine to view
         //the sales report. It's default value is set to "admin" until it is changed.
-        public static string adminPassword = "admin";
+        public string adminPassword = "admin";
 
         //The <salesList> contains the count of the number of sales for each item
         public Dictionary<string, int> salesList = new Dictionary<string, int>();
@@ -203,11 +203,12 @@ namespace Capstone
             //to be given back to the vending machine patron
 
             int[] change = new int[4];
-            (int, string)[] changeAmounts = new (int, string)[] {
-                ( 25, "Quarters:" ),
-                ( 10, "Dimes:" ),
-                ( 5, "Nickels:" ),
-                ( 1, "Pennies:" )
+            Tuple<int, string>[] changeAmounts = new Tuple<int, string>[] {
+            
+                new Tuple<int, string>( 25, "Quarters:" ),
+                new Tuple<int, string>( 10, "Dimes:" ),
+                new Tuple<int, string>( 5, "Nickels:" ),
+                new Tuple<int, string>( 1, "Pennies:" )
             };
 
             int amountRemaining = (int)(CurrentBalance * 100);
@@ -287,7 +288,7 @@ namespace Capstone
         }
 
         //This metod is used to change the admin password of the vending machine
-        public static void ChangePassword(IUserIO userIO)
+        public void ChangePassword(IUserIO userIO)
         {
             adminPassword = UserInterface.ChangePasswordMenu(userIO);
             UserInterface.EndOfMenu(userIO, "Admin password successfully changed! Press \"Enter\" to continue...");

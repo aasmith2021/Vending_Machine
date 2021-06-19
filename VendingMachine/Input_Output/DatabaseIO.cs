@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 
-namespace Capstone
+namespace VendingMachineApplication
 {
     public class DatabaseIO : IDataIO
     {

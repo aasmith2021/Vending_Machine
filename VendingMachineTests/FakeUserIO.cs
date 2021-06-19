@@ -1,16 +1,23 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System;
-using Capstone;
+using VendingMachineApplication;
 
-namespace CapstoneTests
+namespace VendingMachineTests
 {
     [TestClass]
-    public class FakeUserIOA4 : IUserIO
+    public class FakeUserIO : IUserIO
     {
+        public FakeUserIO(string testInput = "3")
+        {
+            this.TestInput = testInput;
+        }
+
+        public string TestInput { get; }
+        
         public string GetInput()
         {
-            return "A4";
+            return this.TestInput;
         }
 
         public void ClearDisplay()
@@ -22,5 +29,7 @@ namespace CapstoneTests
         {
 
         }
+
+
     }
 }

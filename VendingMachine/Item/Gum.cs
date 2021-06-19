@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Capstone
+namespace VendingMachineApplication
 {
     public class Gum : Item
     {
