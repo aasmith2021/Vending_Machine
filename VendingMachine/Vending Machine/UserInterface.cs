@@ -11,6 +11,8 @@ namespace VendingMachineApplication
         {
             string[] mainMenuOptions = new string[] { "Display Vending Machine Items", "Purchase", "Exit" };
             List<string> optionChoices = GetOptionChoicesForMenu(mainMenuOptions);
+
+            //Adds a hidden menu option to run the Admin menu
             optionChoices.Add((optionChoices.Count + 1).ToString());
 
             string header = "WELCOME TO THE VENDO-MATIC 800";
@@ -20,7 +22,7 @@ namespace VendingMachineApplication
             return userOption;
         }
 
-        //Displays the vending machine inventory on the console
+        //Displays the vending machine inventory
         public static void PrintInventory(IList<Slot> inventoryList, IUserIO userIO)
         {
             string header = "------------- VENDING MACHINE INVENTORY --------------";
@@ -132,7 +134,7 @@ namespace VendingMachineApplication
         }
 
         //This menu gets input from the user to purchase a product and allows them to make a purchase if the
-        //item is not sold out and they have enouth money to make the purchase
+        //item is not sold out and they have enough money to make the purchase
         public static string RunSelectProductMenu(IUserIO userIO, SortedList<string, Slot> inventoryList, decimal currentBalance)
         {
             userIO.ClearDisplay();
